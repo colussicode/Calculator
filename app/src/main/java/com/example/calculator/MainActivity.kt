@@ -21,6 +21,14 @@ class MainActivity : AppCompatActivity() {
         initializeOperatorButtons()
         binding.buttonEquals.setOnClickListener { buttonEqualsClick() }
         binding.buttonBackspace.setOnClickListener { backSpaceButtonClick() }
+
+        observeNumberLiveData()
+    }
+
+    private fun observeNumberLiveData() {
+        viewModel.number.observe(this) { number ->
+            binding.resultTextview.text = number
+        }
     }
 
     private fun initializeNumberButtons () {
@@ -62,25 +70,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun numberButtonClick(btn: Button) {
         viewModel.numberButtonClick(btn)
-        binding.resultTextview.text = viewModel.operationsString.toString()
     }
 
     private fun clear() {
         viewModel.clear()
-        binding.resultTextview.text = "0"
     }
 
     private fun backSpaceButtonClick() {
         viewModel.backSpaceButtonClick()
-        binding.resultTextview.text = viewModel.operationsString.toString()
-        if(viewModel.operationsString.isEmpty()) {
-            binding.resultTextview.text = "0"
-        }
     }
 
     private fun buttonEqualsClick() {
         viewModel.equalsButtonClick()
-        binding.resultTextview.text = viewModel.operationsString.toString()
     }
-
 }

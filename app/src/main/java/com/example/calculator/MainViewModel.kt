@@ -1,28 +1,33 @@
 package com.example.calculator
 
 import android.widget.Button
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class MainViewModel : ViewModel() {
 
-    var operationsString = StringBuilder()
+    private val _number: MutableLiveData<String> = MutableLiveData("0")
+    var number: LiveData<String> = _number
+
+
     private var operator: Operator = Operator.NONE
     private var isOperatorClicked = false
     private var firstBlock: Double = 0.0
 
     fun numberButtonClick(btn: Button) {
         if(isOperatorClicked) {
-            firstBlock = operationsString.toString().toDouble()
+            firstBlock = _number.value!!.toDouble()
 
-            operationsString.clear()
+            _number.value = "0"
             isOperatorClicked = false
         }
-
-        operationsString.append(btn.text)
+        if(_number.value == "0") _number.value = ""
+        _number.value += btn.text
     }
 
     fun clear() {
-        operationsString.clear()
+        _number.value = "0"
     }
 
     fun operatorButtonClick(btn: Button) {
@@ -38,13 +43,15 @@ class MainViewModel : ViewModel() {
     }
 
     fun backSpaceButtonClick() {
-        if(operationsString.isNotEmpty()) {
-            operationsString.deleteCharAt(operationsString.length -1)
+        if(_number.value!!.isNotEmpty()) {
+            _number.value = _number.value!!.dropLast(1)
+
+            if(_number.value!!.isEmpty()) _number.value = "0"
         }
     }
 
     fun equalsButtonClick() {
-        val secondBlock = operationsString.toString().toDouble()
+        val secondBlock = _number.value!!.toDouble()
 
         val result = when(operator) {
             Operator.ADD -> firstBlock + secondBlock
@@ -54,8 +61,7 @@ class MainViewModel : ViewModel() {
             else -> 0.0
         }
 
-        operationsString.clear()
-        operationsString.append(result.toString())
+        _number.value = result.toString()
     }
 }
 
